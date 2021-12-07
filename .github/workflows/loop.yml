@@ -47,44 +47,10 @@ jobs:
         run: |
           docker run --privileged --rm -i mirror-bot
  
-  # 2nd Job for running bot 2
-  bot-2:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@main
-
-      - name: Set Git Configs & Secrets
-        run: |
-          git config --global user.email ${GitHubMail}
-          git config --global user.name ${GitHubName}
-          git config --global credential.helper store
-          echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
-
-      # Cleanup The Actions Workspace Using Custom Composite Run Actions
-      - uses: rokibhasansagar/slimhub_actions@main
-
-      - name: Clone The Secret Mirror Repository
-        run: |
-          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} source
-
-      - name: Compile The Mirroring Docker Container
-        run: |
-          cd source || exit 1
-          docker container prune --force || true
-          docker build . --rm --force-rm --compress --no-cache=true --pull --file Dockerfile -t mirror-bot
-          docker image ls
-
-      - name: running Docker
-        timeout-minutes: 340
-        continue-on-error: true
-        run: |
-          docker run --privileged --rm -i mirror-bot
                  
   # 3rd Job for looping the workflow after job 1 & 2 completes
   looper:
-    needs: [bot-1, bot-2]
+    needs: [bot-1]
     runs-on: ubuntu-latest
 
     steps:
