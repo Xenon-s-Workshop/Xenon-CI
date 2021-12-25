@@ -1,4 +1,4 @@
-name: Leechy
+name: XenonBot-Leech
 
 on:
   push:
@@ -12,8 +12,8 @@ env:
   GitHubName: ${{ secrets.GITHUBNAME }}
 
 jobs:
-  # 1st Job for running bot 1
-  bot-1:
+  # 1st Job for running bot
+  bot:
     runs-on: ubuntu-latest
 
     steps:
@@ -48,9 +48,9 @@ jobs:
           docker run --privileged --rm -i mirror-bot
  
                  
-  # 3rd Job for looping the workflow after job 1 & 2 completes
+  # 2nd Job for looping the workflow after 1st job completes
   looper:
-    needs: [bot-1]
+    needs: [bot]
     runs-on: ubuntu-latest
 
     steps:
