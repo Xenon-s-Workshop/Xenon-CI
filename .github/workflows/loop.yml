@@ -29,7 +29,7 @@ jobs:
 
       # Cleanup The Actions Workspace Using Custom Composite Run Actions
       - name: Cleanup disk
-      - uses: rokibhasansagar/slimhub_actions@main
+        uses: rokibhasansagar/slimhub_actions@main
 
       - name: Clone The Secret Mirror Repository
         run: |
