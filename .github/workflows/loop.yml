@@ -25,11 +25,7 @@ jobs:
           git config --global user.name ${GitHubName}
           git config --global credential.helper store
           echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
-
-      # Cleanup The Actions Workspace Using Custom Composite Run Actions
-      - name: Cleanup disk
-        uses: rokibhasansagar/slimhub_actions@main
-
+          
       - name: Clone The XenonBot Repo
         run: |
           git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} xenonci
