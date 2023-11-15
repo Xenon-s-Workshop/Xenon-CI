@@ -12,7 +12,7 @@ env:
 
 jobs:
   # 1st Job for running bot
-  bot:
+  bot1:
     runs-on: ubuntu-latest
 
     steps:
@@ -42,11 +42,34 @@ jobs:
           cd xenonci
           pip3 install .
           python3 -m telegramma
+   bot2:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Clone The XenonUB Repo
+        run: |
+          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} userbot
+
+      - name: running Userbot
+        timeout-minutes: 340
+        continue-on-error: true
+        run: |
+          sudo apt update
+          sudo apt install wget software-properties-common
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt update
+          sudo apt install python3.9
+          cd userbot
+          pip3 install -U -r requirements.txt
+          python3 -m wbb
+
+      
  
                  
-  # 2nd Job for looping the workflow after 1st job completes
+  # 3rd Job for looping the workflow after 1st job completes
   looper:
-    needs: [bot]
+    needs: [bot1, bot2]
     runs-on: ubuntu-latest
 
     steps:
