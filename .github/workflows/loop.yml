@@ -1,21 +1,26 @@
 name: Xenon-CI
 
+# This workflow gets triggered on push to main branch and manual dispatch
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
-   
+
+# Environment variables
 env:
   GitHubMail: ${{ secrets.GITHUBMAIL }}
   GitHubName: ${{ secrets.GITHUBNAME }}
 
 jobs:
+  # First job
   bot1:
     runs-on: ubuntu-latest
     steps:
+      # Checkout the repository
       - name: Checkout
         uses: actions/checkout@main
 
+      # Set Git Configs & Secrets
       - name: Set Git Configs & Secrets
         run: |
           git config --global user.email ${GitHubMail}
@@ -23,10 +28,12 @@ jobs:
           git config --global credential.helper store
           echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
           
+      # Clone The XenonBot Repo
       - name: Clone The XenonBot Repo
         run: |
           git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} xenonci
 
+      # Running XenonCi
       - name: running XenonCi
         timeout-minutes: 340
         continue-on-error: true
@@ -40,13 +47,16 @@ jobs:
           pip3 install .
           python3 -m telegramma
 
+  # Second job
   bot2:
     runs-on: ubuntu-latest
     steps:
+      # Clone The XenonUB Repo
       - name: Clone The XenonUB Repo
         run: |
           git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} userbot
 
+      # Running Userbot
       - name: running Userbot
         timeout-minutes: 340
         continue-on-error: true
@@ -60,13 +70,16 @@ jobs:
           pip3 install -U -r requirements.txt
           python3 -m wbb
 
+  # Third job that depends on the first two jobs
   looper:
     needs: [bot1, bot2]
     runs-on: ubuntu-latest
     steps:
+      # Checkout the repository
       - name: Checkout
         uses: actions/checkout@main
 
+      # Set Git Configs & Secrets
       - name: Set Git Configs & Secrets
         run: |
           git config --global user.email ${GitHubMail}
@@ -75,6 +88,7 @@ jobs:
           git config --global credential.helper store
           echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
           
+      # Loop Workflow
       - name: Loop Workflow
         run: |
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} temp
