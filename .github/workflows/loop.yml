@@ -42,10 +42,9 @@ jobs:
           cd xenonci
           pip3 install .
           python3 -m telegramma
-   bot2:
-    runs-on: ubuntu-latest
-
-    steps:
+  bot2:
+     runs-on: ubuntu-latest
+steps:
 
       - name: Clone The XenonUB Repo
         run: |
