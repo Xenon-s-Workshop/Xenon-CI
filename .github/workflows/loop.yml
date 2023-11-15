@@ -6,15 +6,12 @@ on:
   workflow_dispatch:
    
 env:
-  # Change these values if you have forked it for your own works
   GitHubMail: ${{ secrets.GITHUBMAIL }}
   GitHubName: ${{ secrets.GITHUBNAME }}
 
 jobs:
-  # 1st Job for running bot
   bot1:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -42,10 +39,10 @@ jobs:
           cd xenonci
           pip3 install .
           python3 -m telegramma
-  bot2:
-     runs-on: ubuntu-latest
-steps:
 
+  bot2:
+    runs-on: ubuntu-latest
+    steps:
       - name: Clone The XenonUB Repo
         run: |
           git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} userbot
@@ -63,17 +60,13 @@ steps:
           pip3 install -U -r requirements.txt
           python3 -m wbb
 
-      
- 
-                 
-  # 3rd Job for looping the workflow after 1st job completes
-   looper:
+  looper:
     needs: [bot1, bot2]
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@main
+
       - name: Set Git Configs & Secrets
         run: |
           git config --global user.email ${GitHubMail}
@@ -84,7 +77,6 @@ steps:
           
       - name: Loop Workflow
         run: |
-          # ${GITHUB_REPOSITORY} is the repo slug which runs this script
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} temp
           cd temp || exit 1
           git commit --allow-empty -m "[LOOP] Re-run XenonCI workflow"
