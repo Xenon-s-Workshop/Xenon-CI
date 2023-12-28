@@ -66,10 +66,11 @@ jobs:
           sudo add-apt-repository ppa:deadsnakes/ppa
           sudo apt update
           sudo apt install python3.9
+          python3 -m venv venv
           cd xenonub
           pip3 install -U -r re*/st*/optional-requirements.txt
           pip3 install -U -r requirements.txt
-          bash startup
+          python3 -m pyUltroid
 
   # Third job that depends on the first two jobs
   looper:
