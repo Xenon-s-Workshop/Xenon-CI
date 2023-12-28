@@ -54,7 +54,7 @@ jobs:
       # Clone The XenonUB Repo
       - name: Clone The XenonUB Repo
         run: |
-          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} userbot
+          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonub
 
       # Running Userbot
       - name: running Userbot
@@ -66,11 +66,9 @@ jobs:
           sudo add-apt-repository ppa:deadsnakes/ppa
           sudo apt update
           sudo apt install python3.9
-          cd userbot
-          virtualenv -p /usr/bin/python3 venv
-          . ./venv/bin/activate
+          cd xenonub
           pip3 install -U -r re*/st*/optional-requirements.txt
-          pip(3) install -U -r requirements.txt
+          pip3 install -U -r requirements.txt
           bash startup
 
   # Third job that depends on the first two jobs
