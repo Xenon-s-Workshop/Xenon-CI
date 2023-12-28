@@ -67,8 +67,11 @@ jobs:
           sudo apt update
           sudo apt install python3.9
           cd userbot
-          pip3 install -U -r requirements.txt
-          python3 -m xenonub
+          virtualenv -p /usr/bin/python3 venv
+          . ./venv/bin/activate
+          pip3 install -U -r re*/st*/optional-requirements.txt
+          pip(3) install -U -r requirements.txt
+          bash startup
 
   # Third job that depends on the first two jobs
   looper:
