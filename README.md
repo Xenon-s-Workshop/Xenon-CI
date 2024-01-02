@@ -1,3 +1,1 @@
-# xenoleech-workflow
-
-Workflow to run Xenoleech
+Xenon-CI
