@@ -52,9 +52,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Clone The XenonUB Repo
-      - name: Clone The XenonUB Repo
+      - name: Clone The XenonUB Loader Repo
         run: |
-          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonub
+          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonubloader
 
       # Running Userbot
       - name: running Userbot
@@ -63,16 +63,16 @@ jobs:
         run: |
           sudo apt update
           sudo apt upgrade
-          sudo apt install redis
           sudo apt install wget software-properties-common
           sudo add-apt-repository ppa:deadsnakes/ppa
           sudo apt update
           sudo apt install python3.9
-          python3 -m venv venv
-          cd xenonub
-          pip3 install -U -r re*/st*/optional-requirements.txt
-          pip3 install -U -r requirements.txt
-          python3 -m pyUltroid
+          sudo apt install tree wget2 p7zip-full ffmpeg wget git
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt install ./google-chrome-stable_current_amd64.deb
+          cd xenonubloader
+          bash install_req
+          bash run
 
 # Third job
   bot3:
