@@ -74,7 +74,8 @@ jobs:
           sudo apt install ./google-chrome-stable_current_amd64.deb
           cd xenonubloader
           bash install_req
-          pip3 install -U --force-reinstall pyrogram       
+          pip3 install -U --force-reinstall pyrogram
+          pip install Pyrogram
           bash run
 
 # Third job
