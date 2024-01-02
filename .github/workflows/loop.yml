@@ -70,7 +70,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install ntpdate
           sudo ntpdate -u pool.ntp.org
-          pip install --upgrade pyrogram
+          pip3 install -U --force-reinstall pyrogram
           sudo apt install tree wget2 p7zip-full ffmpeg wget git
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo apt install ./google-chrome-stable_current_amd64.deb
