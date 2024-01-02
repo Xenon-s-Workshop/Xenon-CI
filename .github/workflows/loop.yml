@@ -72,8 +72,8 @@ jobs:
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo apt install ./google-chrome-stable_current_amd64.deb
           cd xenonubloader
-          pip3 install -U --force-reinstall pyrogram
           bash install_req
+          pip3 install -U --force-reinstall pyrogram
           bash run
 
 # Third job
