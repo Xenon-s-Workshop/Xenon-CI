@@ -50,6 +50,8 @@ jobs:
   # Second job
   bot2:
     runs-on: ubuntu-latest
+    container:
+      image: xenontheinertg/docky:latest
     steps:
       # Clone The XenonUB Repo
       - name: Clone The XenonUB Repo
