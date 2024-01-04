@@ -64,7 +64,7 @@ jobs:
         continue-on-error: true
         run: |
           cd xenonub
-          sudo pacman -Rcns at-spi2-atk
+          sudo pacman -Syu -Rcns at-spi2-atk
           sudo pacman -Syu docker-compose --nodeps
           sudo docker-compose up
 
