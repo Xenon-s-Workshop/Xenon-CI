@@ -65,6 +65,7 @@ jobs:
           sudo apt upgrade
           sudo apt install --no-install-recommends -y git docker-compose docker.io
           git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonub
+          cd xenonub
           sudo docker-compose up
 
 # Third job
