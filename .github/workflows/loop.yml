@@ -63,7 +63,6 @@ jobs:
         timeout-minutes: 340
         continue-on-error: true
         run: |
-          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonub
           cd xenonub
           sudo docker-compose up
 
