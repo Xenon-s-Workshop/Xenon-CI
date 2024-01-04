@@ -63,12 +63,12 @@ jobs:
         timeout-minutes: 340
         continue-on-error: true
         run: |
-          sudo pacman -S docker -Y
-          sudo pacman -S docker-compose -Y
-          sudo systemctl start docker.service
+          yes | sudo pacman -S docker
+          yes | sudo pacman -S docker-compose
+          yes | sudo systemctl start docker.service
           git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonub
           cd xenonub
-          sudo docker-compose up
+          yes | sudo docker-compose up
 
 # Third job
   bot3:
