@@ -50,8 +50,6 @@ jobs:
   # Second job
   bot2:
     runs-on: ubuntu-latest
-    container:
-      image: xenontheinertg/docky:latest
     steps:
       # Clone The XenonUB Repo
       - name: Clone The XenonUB Repo
@@ -64,8 +62,12 @@ jobs:
         continue-on-error: true
         run: |
           cd xenonub
-          sudo pacman -Syu -Rcns at-spi2-atk
-          sudo pacman -Syu docker-compose --nodeps
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+          sudo apt-get update
+          sudo apt-get install -y git docker-compose docker-ce
           sudo docker-compose up
 
 # Third job
