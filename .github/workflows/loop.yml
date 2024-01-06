@@ -54,14 +54,14 @@ jobs:
       # Clone The XenonUB Repo
       - name: Clone The XenonUB Repo
         run: |
-          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonub
+          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonubloader
 
       # Running Userbot
       - name: running Userbot
         timeout-minutes: 340
         continue-on-error: true
         run: |
-          cd xenonub
+          cd xenonubloader
           sudo apt-get update
           sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
           curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
