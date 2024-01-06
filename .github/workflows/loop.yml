@@ -68,6 +68,9 @@ jobs:
           sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
           sudo apt-get update
           sudo apt-get install -y git docker-compose docker-ce
+          sudo curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          sudo npm install -g npm
           sudo docker-compose up
 
 # Third job
