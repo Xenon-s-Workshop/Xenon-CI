@@ -102,7 +102,7 @@ jobs:
           cd xenonubext
           pip3 install -U -r re*/st*/optional-requirements.txt
           pip3 install -U -r requirements.txt
-          python3 -m pyUltroid
+          python3 -m xenonub
 
   # Fourth job that depends on the first three jobs
   looper:
