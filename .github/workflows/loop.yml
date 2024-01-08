@@ -84,7 +84,7 @@ jobs:
       # Clone The XenonUB Repo
       - name: Clone The XenonUB Repo
         run: |
-          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG3 }} xenonubext
+          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonubext
 
       # Running Userbot
       - name: running Userbot
@@ -102,7 +102,7 @@ jobs:
           cd xenonubext
           pip3 install -U -r re*/st*/optional-requirements.txt
           pip3 install -U -r requirements.txt
-          python3 -m xenonub
+          python3 -m pyUltroid
 
   # Fourth job that depends on the first three jobs
   looper:
