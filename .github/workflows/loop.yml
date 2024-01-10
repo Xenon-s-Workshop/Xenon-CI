@@ -45,7 +45,7 @@ jobs:
     steps:
       - name: Clone The XenonCDN Repo
         run: |
-          git clone https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonubcdn
+          git clone https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenoncdn
 
       - name: running CDN
         timeout-minutes: 340
