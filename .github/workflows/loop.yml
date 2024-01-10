@@ -78,7 +78,7 @@ jobs:
           pv \
           && sudo apt-get autoclean \
           && sudo apt-get autoremove \
-          && rm -rf /var/lib/apt/lists/*
+          && sudo rm -rf /var/lib/apt/lists/*
           pip3 install --upgrade setuptools wheel yarl multidict
           pip3 install -r requirements.txt
           python3 bot.py
