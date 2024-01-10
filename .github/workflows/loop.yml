@@ -1,39 +1,32 @@
 name: Xenon-CI
 
-# This workflow gets triggered on push to main branch and manual dispatch
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
-# Environment variables
 env:
   GitHubMail: ${{ secrets.GITHUBMAIL }}
   GitHubName: ${{ secrets.GITHUBNAME }}
 
 jobs:
-  # First job
   bot1:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository
       - name: Checkout
-        uses: actions/checkout@main
+        uses: actions/checkout@v2
 
-      # Set Git Configs & Secrets
       - name: Set Git Configs & Secrets
         run: |
-          git config --global user.email ${GitHubMail}
-          git config --global user.name ${GitHubName}
+          git config --global user.email "${{ env.GitHubMail }}"
+          git config --global user.name "${{ env.GitHubName }}"
           git config --global credential.helper store
-          echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
-          
-      # Clone The XenonBot Repo
+          echo "https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
+
       - name: Clone The XenonBot Repo
         run: |
-          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} xenonci
+          git clone https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} xenonci
 
-      # Running XenonCi
       - name: running XenonCi
         timeout-minutes: 340
         continue-on-error: true
@@ -47,46 +40,56 @@ jobs:
           pip3 install .
           python3 -m telegramma
 
-  # Second job
   bot2:
     runs-on: ubuntu-latest
     steps:
-      # Clone The XenonUB Repo
-      - name: Clone The XenonUB Repo
+      - name: Clone The XenonCDN Repo
         run: |
-          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonubloader
+          git clone https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonubcdn
 
-      # Running Userbot
-      - name: running Userbot
+      - name: running CDN
         timeout-minutes: 340
         continue-on-error: true
         run: |
-          cd xenonubloader
+          cd xenoncdn
           sudo apt-get update
-          sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-          sudo apt-get update
-          sudo apt-get install -y git docker-compose docker-ce
-          sudo apt install tree wget2 p7zip-full ffmpeg wget git
-          # install chrome
-          RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list && \
-          apt-get update && \
-          apt-get install -y google-chrome-stable
-          bash install_req
-          bash run
+          sudo apt update
+          sudo apt install wget software-properties-common
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt update
+          sudo apt install python3.9
+          apt-get update && apt-get upgrade -y 
+          echo y | apt-get install locales
+          echo y | apt install build-essential
+          apt -qq install -y --no-install-recommends \
+          curl \
+          git \
+          gnupg2 \
+          wget
+          set -ex; \
+          apt-get update \
+          && apt-get install -y --no-install-recommends \
+          busybox \
+          git \
+          python3 \
+          python3-dev \
+          python3-pip \
+          python3-lxml \
+          pv \
+          && apt-get autoclean \
+          && apt-get autoremove \
+          && rm -rf /var/lib/apt/lists/*
+          pip3 install --upgrade setuptools wheel yarl multidict
+          pip3 install -r requirements.txt
+          python3 bot.py
 
-# Third job
   bot3:
     runs-on: ubuntu-latest
     steps:
-      # Clone The XenonUB Repo
       - name: Clone The XenonUB Repo
         run: |
-          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonubext
+          git clone https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonubext
 
-      # Running Userbot
       - name: running Userbot
         timeout-minutes: 340
         continue-on-error: true
@@ -104,25 +107,22 @@ jobs:
           pip3 install -U -r requirements.txt
           python3 -m pyUltroid
 
-  # Fourth job that depends on the first three jobs
   looper:
     needs: [bot1, bot2, bot3]
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository
       - name: Checkout
-        uses: actions/checkout@main
+        uses: actions/checkout@v2
 
-      # Set Git Configs & Secrets
       - name: Set Git Configs & Secrets
         run: |
-          git config --global user.email ${GitHubMail}
-          git config --global user.name ${GitHubName}
+          git config --global user.email "${{ env.GitHubMail }}"
+          git config --global user.name "${{ env.GitHubName }}"
           git config --global pull.rebase false
           git config --global credential.helper store
-          echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
-          
-      # Loop Workflow
+          echo "https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
+
+    
       - name: Loop Workflow
         run: |
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} temp
