@@ -10,7 +10,7 @@ env:
   GitHubName: ${{ secrets.GITHUBNAME }}
 
 jobs:
-  bot1:
+  xenon-music:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,11 +23,11 @@ jobs:
           git config --global credential.helper store
           echo "https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
 
-      - name: Clone The XenonBot Repo
+      - name: Clone The XenonMusic Repo
         run: |
-          git clone https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} xenonci
+          git clone https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} xenonmusic
 
-      - name: running XenonCi
+      - name: running XenonMusic
         timeout-minutes: 340
         continue-on-error: true
         run: |
@@ -36,79 +36,16 @@ jobs:
           sudo add-apt-repository ppa:deadsnakes/ppa
           sudo apt update
           sudo apt install python3.9
-          cd xenonci
-          pip3 install .
-          python3 -m telegramma
-
-  bot2:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone The XenonCDN Repo
-        run: |
-          git clone https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenoncdn
-
-      - name: running CDN
-        timeout-minutes: 340
-        continue-on-error: true
-        run: |
-          cd xenoncdn
-          sudo apt-get update
-          sudo apt update
-          sudo apt install wget software-properties-common
-          sudo add-apt-repository ppa:deadsnakes/ppa
-          sudo apt update
-          sudo apt install python3.9
-          apt-get update && apt-get upgrade -y 
-          echo y | sudo apt-get install locales
-          echo y | sudo apt install build-essential
-          sudo apt -qq install -y --no-install-recommends \
-          curl \
-          git \
-          gnupg2 \
-          wget
-          set -ex; \
-          sudo apt-get update \
-          && sudo apt-get install -y --no-install-recommends \
-          busybox \
-          git \
-          python3 \
-          python3-dev \
-          python3-pip \
-          python3-lxml \
-          pv \
-          && sudo apt-get autoclean \
-          && sudo apt-get autoremove \
-          && sudo rm -rf /var/lib/apt/lists/*
-          pip3 install --upgrade setuptools wheel yarl multidict
-          pip3 install -r requirements.txt
-          python3 bot.py
-
-  bot3:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone The XenonUB Repo
-        run: |
-          git clone https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG2 }} xenonubext
-
-      - name: running Userbot
-        timeout-minutes: 340
-        continue-on-error: true
-        run: |
-          sudo apt update
-          sudo apt upgrade
-          sudo apt install redis
-          sudo apt install wget software-properties-common
-          sudo add-apt-repository ppa:deadsnakes/ppa
-          sudo apt update
-          sudo apt install python3.9
-          python3 -m venv venv
-          cd xenonubext
-          pip3 install -U -r re*/st*/optional-requirements.txt
+          cd xenonmusic
+          sudo apt-get update && sudo apt-get upgrade -y
+          sudo apt-get install python3-pip ffmpeg -y
+          sudo pip3 install -U pip
+          curl -fssL https://deb.nodesource.com/setup_17.x | sudo -E bash - && sudo apt-get install nodejs -y && npm i -g npm
           pip3 install -U -r requirements.txt
-          python3 -m pyUltroid
+          bash start
 
   looper:
-    needs: [bot1, bot2, bot3]
+    needs: [xenon-music]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
