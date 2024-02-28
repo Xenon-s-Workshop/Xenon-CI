@@ -10,7 +10,7 @@ env:
   GitHubName: ${{ secrets.GITHUBNAME }}
 
 jobs:
-  xenon-music:
+  xenonub:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,11 +23,11 @@ jobs:
           git config --global credential.helper store
           echo "https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
 
-      - name: Clone The XenonMusic Repo
+      - name: Clone The XenonUB Repo
         run: |
-          git clone https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} xenonmusic
+          git clone https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} xenonub
 
-      - name: running XenonMusic
+      - name: running XenonUB
         timeout-minutes: 340
         continue-on-error: true
         run: |
@@ -36,16 +36,16 @@ jobs:
           sudo add-apt-repository ppa:deadsnakes/ppa
           sudo apt update
           sudo apt install python3.9
-          cd xenonmusic
           sudo apt-get update && sudo apt-get upgrade -y
-          sudo apt-get install python3-pip ffmpeg -y
           sudo pip3 install -U pip
-          curl -fssL https://deb.nodesource.com/setup_17.x | sudo -E bash - && sudo apt-get install nodejs -y && npm i -g npm
-          pip3 install -U -r requirements.txt
-          bash start
+          sudo apt update
+          sudo apt install ffmpeg git python3-pip
+          cd xenonub
+          pip3 install -r requirements.txt
+          python3 -m main
 
   looper:
-    needs: [xenon-music]
+    needs: [xenonub]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
