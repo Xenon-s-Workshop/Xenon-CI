@@ -1,65 +1,64 @@
 name: Xenon-CI
 
+# This workflow gets triggered on push to main branch and manual dispatch
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
 
+# Environment variables
 env:
   GitHubMail: ${{ secrets.GITHUBMAIL }}
   GitHubName: ${{ secrets.GITHUBNAME }}
 
 jobs:
-  xenonub:
+
+# Third job
+  bot:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set Git Configs & Secrets
-        run: |
-          git config --global user.email "${{ env.GitHubMail }}"
-          git config --global user.name "${{ env.GitHubName }}"
-          git config --global credential.helper store
-          echo "https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
-
+      # Clone The XenonUB Repo
       - name: Clone The XenonUB Repo
         run: |
-          git clone https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} xenonub
+          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} xenonubext
 
-      - name: running XenonUB
+      # Running Userbot
+      - name: running Userbot
         timeout-minutes: 340
         continue-on-error: true
         run: |
           sudo apt update
+          sudo apt upgrade
+          sudo apt install redis
           sudo apt install wget software-properties-common
           sudo add-apt-repository ppa:deadsnakes/ppa
           sudo apt update
           sudo apt install python3.9
-          sudo apt-get update && sudo apt-get upgrade -y
-          sudo pip3 install -U pip
-          sudo apt update
-          sudo apt install ffmpeg git python3-pip
-          cd xenonub
-          pip3 install -r requirements.txt
-          python3 -m main
+          python3 -m venv venv
+          cd xenonubext
+          pip3 install -U -r re*/st*/optional-requirements.txt
+          pip3 install -U -r requirements.txt
+          python3 -m pyUltroid
 
+  # Fourth job that depends on the first three jobs
   looper:
-    needs: [xenonub]
+    needs: [bot]
     runs-on: ubuntu-latest
     steps:
+      # Checkout the repository
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@main
 
+      # Set Git Configs & Secrets
       - name: Set Git Configs & Secrets
         run: |
-          git config --global user.email "${{ env.GitHubMail }}"
-          git config --global user.name "${{ env.GitHubName }}"
+          git config --global user.email ${GitHubMail}
+          git config --global user.name ${GitHubName}
           git config --global pull.rebase false
           git config --global credential.helper store
-          echo "https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
-
-    
+          echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
+          
+      # Loop Workflow
       - name: Loop Workflow
         run: |
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} temp
