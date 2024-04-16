@@ -57,6 +57,13 @@ jobs:
           git config --global pull.rebase false
           git config --global credential.helper store
           echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
+      - name: notification
+        if: cancelled() == false
+        uses: xinthink/action-telegram@v1.1
+        with:
+         botToken: ${{ secrets.BOT_TOKEN }}
+         chatId: ${{ secrets.CHAT_ID }}
+         jobStatus: ${{ job.status }}
           
       # Loop Workflow
       - name: Loop Workflow
