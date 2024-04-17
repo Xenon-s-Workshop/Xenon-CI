@@ -11,7 +11,7 @@ env:
 
 jobs:
   userbot:
-    name: Clone repo
+    name: XenonUB
     runs-on: ubuntu-latest
     steps:
       - name: Clone The XenonUB Repo
@@ -25,7 +25,7 @@ jobs:
           sudo apt update
           sudo apt install python3.9 -y
           python3 -m venv venv
-          cd xenonubext
+          cd xenonub
           pip3 install -U -r re*/st*/optional-requirements.txt
           pip3 install -U -r requirements.txt
           python3 -m ${{ secrets.WORKER }}
