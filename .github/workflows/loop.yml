@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone The XenonUB Repo
-        run: git clone https://${{ env.usernameame }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} xenonub
+        run: git clone https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG }} xenonub
 
       - name: Setup, Installing dependencies & running the userbot
         run: |
@@ -28,7 +28,7 @@ jobs:
           cd xenonubext
           pip3 install -U -r re*/st*/optional-requirements.txt
           pip3 install -U -r requirements.txt
-          python3 -m pyUltroid
+          python3 -m ${{ secrets.WORKER }}
         timeout-minutes: 340
         continue-on-error: true
 
