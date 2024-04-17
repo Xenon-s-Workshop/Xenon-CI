@@ -1,72 +1,54 @@
 name: Xenon-CI
 
-# This workflow gets triggered on push to main branch and manual dispatch
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
-# Environment variables
 env:
-  GitHubMail: ${{ secrets.GITHUBMAIL }}
-  GitHubName: ${{ secrets.GITHUBNAME }}
+  mail: ${{ secrets.GITHUBMAIL }}
+  username: ${{ secrets.GITHUBNAME }}
 
 jobs:
-
-# Third job
-  bot:
+  userbot:
+    name: Clone repo
     runs-on: ubuntu-latest
     steps:
-      # Clone The XenonUB Repo
       - name: Clone The XenonUB Repo
-        run: |
-          git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} xenonubext
+        run: git clone https://${{ env.usernameame }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.MIRROR_REPOSLUG }} xenonub
 
-      # Running Userbot
-      - name: running Userbot
-        timeout-minutes: 340
-        continue-on-error: true
+      - name: Setup, Installing dependencies & running the userbot
         run: |
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install -y redis wget software-properties-common
+          sudo add-apt-repository ppa:deadsnakes/ppa -y
           sudo apt update
-          sudo apt upgrade
-          sudo apt install redis
-          sudo apt install wget software-properties-common
-          sudo add-apt-repository ppa:deadsnakes/ppa
-          sudo apt update
-          sudo apt install python3.9
+          sudo apt install python3.9 -y
           python3 -m venv venv
           cd xenonubext
           pip3 install -U -r re*/st*/optional-requirements.txt
           pip3 install -U -r requirements.txt
           python3 -m pyUltroid
+        timeout-minutes: 340
+        continue-on-error: true
 
-  # Fourth job that depends on the first three jobs
   looper:
-    needs: [bot]
+    name: Run userbot loop
+    needs: userbot
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository
-      - name: Checkout
-        uses: actions/checkout@main
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-      # Set Git Configs & Secrets
       - name: Set Git Configs & Secrets
         run: |
-          git config --global user.email ${GitHubMail}
-          git config --global user.name ${GitHubName}
+          git config --global user.email ${{ env.mail }}
+          git config --global user.name ${{ env.username }}
           git config --global pull.rebase false
           git config --global credential.helper store
-          echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
-      - name: notification
-        if: cancelled() == false
-        uses: xinthink/action-telegram@v1.1
-        with:
-         botToken: ${{ secrets.BOT_TOKEN }}
-         chatId: ${{ secrets.CHAT_ID }}
-         jobStatus: ${{ job.status }}
-          
-      # Loop Workflow
-      - name: Loop Workflow
+          echo "https://${{ env.GitHubName }}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
+
+      - name: Create an empty commit
         run: |
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} temp
           cd temp || exit 1
