@@ -10,6 +10,18 @@ env:
   username: ${{ secrets.GITHUBNAME }}
 
 jobs:
+  start_notification:
+    name: Start Notification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Start Notification to Telegram
+        run: |
+          MESSAGE="Xenon-CI workflow has been triggered!\nBranch: ${GITHUB_REF_NAME}\nCommit: ${{ github.sha }}"
+          curl -X POST \
+            https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.CHAT_ID }} \
+            -d text="$MESSAGE"
+
   userbot:
     name: XenonUB
     runs-on: ubuntu-latest
@@ -57,7 +69,7 @@ jobs:
 
   notify_telegram:
     name: Notify Telegram
-    needs: looper # This ensures the notification is sent after the previous jobs are completed
+    needs: looper
     runs-on: ubuntu-latest
     steps:
       - name: Send Telegram Notification
