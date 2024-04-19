@@ -1,4 +1,5 @@
 # Xenon-CI Workflow
+[![Xenon-CI](https://github.com/Xenon-s-Workshop/Xenon-CI/actions/workflows/loop.yml/badge.svg)](https://github.com/Xenon-s-Workshop/Xenon-CI/actions/workflows/loop.yml)
 
 This repository contains the Xenon-CI workflow, a GitHub Actions workflow designed to automate the process of cloning a repository, setting up a Python environment, installing dependencies, and notifying the status through Telegram upon completion.
 
