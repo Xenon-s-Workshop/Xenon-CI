@@ -10,8 +10,8 @@ env:
   username: ${{ secrets.GITHUBNAME }}
 
 jobs:
-  start_notification:
-    name: Start Notification
+  trigger_workflow:
+    name: send notification
     runs-on: ubuntu-latest
     steps:
       - name: Send Start Notification to Telegram
@@ -24,6 +24,7 @@ jobs:
 
   userbot:
     name: XenonUB
+    needs: trigger_workflow
     runs-on: ubuntu-latest
     steps:
       - name: Clone The XenonUB Repo
