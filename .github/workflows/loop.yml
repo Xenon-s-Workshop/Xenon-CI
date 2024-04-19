@@ -11,7 +11,7 @@ env:
 
 jobs:
   trigger_workflow:
-    name: send notification
+    name: Send Notification
     runs-on: ubuntu-latest
     steps:
       - name: Send Start Notification to Telegram
