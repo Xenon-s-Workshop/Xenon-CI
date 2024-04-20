@@ -69,9 +69,9 @@ jobs:
           MACHINE="$(uname -m)" # Machine hardware name
           REPO_URL="https://github.com/${{ github.repository }}"
           COMMIT_LINK="${REPO_URL}/commit/${{ github.sha }}"
-          MESSAGE="Xenon-CI workflow completed successfully!%0ABranch: ${{ github.ref_name }}%0ACommit: [${{ github.sha }}]($COMMIT_LINK)%0ADate: $DATE%0AOS: $OS_NAME, Kernel: $KERNEL_VERSION, Architecture: $MACHINE"
+          MESSAGE="Xenon-CI workflow completed successfully!<br>Branch: ${{ github.ref_name }}<br>Commit: <a href='$COMMIT_LINK'>${{ github.sha }}</a><br>Date: $DATE<br>OS: $OS_NAME, Kernel: $KERNEL_VERSION, Architecture: $MACHINE"
           curl -X POST \
             https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage \
             -d chat_id=${{ secrets.CHAT_ID }} \
-            -d parse_mode=Markdown \
+            -d parse_mode=HTML \
             -d text="$MESSAGE"
