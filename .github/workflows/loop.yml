@@ -64,9 +64,14 @@ jobs:
       - name: Send Telegram Notification
         run: |
           DATE="$(date)"
-          OS_SPECS="$(uname -a)"
-          MESSAGE="Xenon-CI workflow completed successfully!%0ABranch: ${{ github.ref_name }}%0ACommit: ${{ github.sha }}%0ADate: $DATE%0AOS: $OS_SPECS"
+          OS_NAME="$(uname -s)" # Operating system name
+          KERNEL_VERSION="$(uname -r)" # Kernel version
+          MACHINE="$(uname -m)" # Machine hardware name
+          REPO_URL="https://github.com/${{ github.repository }}"
+          COMMIT_LINK="${REPO_URL}/commit/${{ github.sha }}"
+          MESSAGE="Xenon-CI workflow completed successfully!%0ABranch: ${{ github.ref_name }}%0ACommit: [${{ github.sha }}]($COMMIT_LINK)%0ADate: $DATE%0AOS: $OS_NAME, Kernel: $KERNEL_VERSION, Architecture: $MACHINE"
           curl -X POST \
             https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage \
             -d chat_id=${{ secrets.CHAT_ID }} \
+            -d parse_mode=Markdown \
             -d text="$MESSAGE"
