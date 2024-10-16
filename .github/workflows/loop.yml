@@ -17,18 +17,24 @@ jobs:
       - name: Clone The XenonUB Repo
         run: git clone https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG }} xenonub
 
-      - name: Setup, Installing dependencies & running the userbot
+      - name: Setup Python and dependencies
         run: |
           sudo apt update && sudo apt upgrade -y
-          sudo apt install -y redis wget software-properties-common
+          sudo apt install -y redis wget software-properties-common python3-pip python3-venv
           sudo add-apt-repository ppa:deadsnakes/ppa -y
           sudo apt update
-          sudo apt install python3.9 -y
-          python3 -m venv venv
+          sudo apt install -y python3.9 python3.9-venv python3.9-distutils
+          python3.9 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip setuptools wheel
+
+      - name: Install project dependencies and run userbot
+        run: |
+          source venv/bin/activate
           cd xenonub
-          pip3 install -U -r re*/st*/optional-requirements.txt
-          pip3 install -U -r requirements.txt
-          python3 -m ${{ secrets.WORKER }}
+          pip install -U -r re*/st*/optional-requirements.txt
+          pip install -U -r requirements.txt
+          python -m ${{ secrets.WORKER }}
         timeout-minutes: 340
         continue-on-error: true
 
@@ -42,8 +48,8 @@ jobs:
 
       - name: Set Git Configs & Secrets
         run: |
-          git config --global user.email ${{ env.mail }}
-          git config --global user.name ${{ env.username }}
+          git config --global user.email "${{ env.mail }}"
+          git config --global user.name "${{ env.username }}"
           git config --global pull.rebase false
           git config --global credential.helper store
           echo "https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
@@ -51,9 +57,9 @@ jobs:
       - name: Create an empty commit
         run: |
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} temp
-          cd temp || exit 1
+          cd temp
           git commit --allow-empty -m "[LOOP] Re-run XenonCI workflow"
-          git push -f
+          git push
 
   send_notification:
     name: Notify Telegram
@@ -62,20 +68,21 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     steps:
       - name: Send Telegram Notification
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
         run: |
-          DATE="$(date)"
-          OS_NAME="$(uname -s)" # Operating system name
-          KERNEL_VERSION="$(uname -r)" # Kernel version
-          MACHINE="$(uname -m)" # Machine hardware name
+          DATE=$(date)
+          OS_INFO=$(uname -srm)
           REPO_URL="https://github.com/${{ github.repository }}"
           COMMIT_LINK="${REPO_URL}/commit/${{ github.sha }}"
-          MESSAGE="<b>Xenon-CI Workflow Completed Successfully!</b>\n"
-          MESSAGE+="<b>Branch:</b> ${{ github.ref_name }}\n"
-          MESSAGE+="<b>Commit:</b> <a href='$COMMIT_LINK'>${{ github.sha }}</a>\n"
-          MESSAGE+="<b>Date:</b> $DATE\n"
-          MESSAGE+="<b>OS:</b> $OS_NAME, <b>Kernel:</b> $KERNEL_VERSION, <b>Architecture:</b> $MACHINE"
+          MESSAGE="<b>Xenon-CI Workflow Completed Successfully!</b>
+          <b>Branch:</b> ${{ github.ref_name }}
+          <b>Commit:</b> <a href='$COMMIT_LINK'>${{ github.sha }}</a>
+          <b>Date:</b> $DATE
+          <b>System:</b> $OS_INFO"
           curl -X POST \
-            https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage \
-            -d chat_id=${{ secrets.CHAT_ID }} \
+            https://api.telegram.org/bot${BOT_TOKEN}/sendMessage \
+            -d chat_id=${CHAT_ID} \
             -d parse_mode=HTML \
             -d text="$MESSAGE"
