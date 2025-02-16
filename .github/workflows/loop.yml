@@ -29,7 +29,7 @@ jobs:
       - name: Install project dependencies and run userbot
         run: |
           cd tqb
-          pip install requirements.txt
+          pip install -r requirements.txt
           python main.py
         timeout-minutes: 340
         continue-on-error: true
