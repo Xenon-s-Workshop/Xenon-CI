@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone The XenonUB Repo
-        run: git clone https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG }} xenonub
+        run: git clone https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG }} tqb
 
       - name: Setup Python and dependencies
         run: |
@@ -31,10 +31,9 @@ jobs:
       - name: Install project dependencies and run userbot
         run: |
           source venv/bin/activate
-          cd xenonub
-          pip install -U -r re*/st*/optional-requirements.txt
+          cd tqb
           pip install -U -r requirements.txt
-          python -m ${{ secrets.WORKER }}
+          python main.py
         timeout-minutes: 340
         continue-on-error: true
 
@@ -60,29 +59,3 @@ jobs:
           cd temp
           git commit --allow-empty -m "[LOOP] Re-run XenonCI workflow"
           git push
-
-  send_notification:
-    name: Notify Telegram
-    needs: looper
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
-    steps:
-      - name: Send Telegram Notification
-        env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          CHAT_ID: ${{ secrets.CHAT_ID }}
-        run: |
-          DATE=$(date)
-          OS_INFO=$(uname -srm)
-          REPO_URL="https://github.com/${{ github.repository }}"
-          COMMIT_LINK="${REPO_URL}/commit/${{ github.sha }}"
-          MESSAGE="<b>Xenon-CI Workflow Completed Successfully!</b>
-          <b>Branch:</b> ${{ github.ref_name }}
-          <b>Commit:</b> <a href='$COMMIT_LINK'>${{ github.sha }}</a>
-          <b>Date:</b> $DATE
-          <b>System:</b> $OS_INFO"
-          curl -X POST \
-            https://api.telegram.org/bot${BOT_TOKEN}/sendMessage \
-            -d chat_id=${CHAT_ID} \
-            -d parse_mode=HTML \
-            -d text="$MESSAGE"
