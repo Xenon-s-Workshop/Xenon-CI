@@ -20,19 +20,16 @@ jobs:
       - name: Setup Python and dependencies
         run: |
           sudo apt update && sudo apt upgrade -y
-          sudo apt install -y redis wget software-properties-common python3-pip python3-venv
+          sudo apt install -y wget software-properties-common python3-pip
           sudo add-apt-repository ppa:deadsnakes/ppa -y
           sudo apt update
-          sudo apt install -y python3.9 python3.9-venv python3.9-distutils
-          python3.9 -m venv venv
-          source venv/bin/activate
+          sudo apt install -y python3.9 python3.9-distutils
           pip install --upgrade pip setuptools wheel
 
       - name: Install project dependencies and run userbot
         run: |
-          source venv/bin/activate
           cd tqb
-          pip install -U -r requirements.txt
+          pip install requirements.txt
           python main.py
         timeout-minutes: 340
         continue-on-error: true
