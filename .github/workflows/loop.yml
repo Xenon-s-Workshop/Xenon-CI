@@ -8,6 +8,8 @@ on:
 env:
   mail: ${{ secrets.GITHUBMAIL }}
   username: ${{ secrets.GITHUBNAME }}
+  ACTIONS_RUNNER_DEBUG: true
+  ACTIONS_STEP_DEBUG: true
 
 jobs:
   userbot:
