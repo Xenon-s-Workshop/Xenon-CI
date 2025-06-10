@@ -1,4 +1,4 @@
-name: Xenon-CI
+name: CI for QuizBots
 
 on:
   push:
@@ -12,12 +12,12 @@ env:
   ACTIONS_STEP_DEBUG: true
 
 jobs:
-  userbot:
-    name: XenonUB
+  quizbot1:
+    name: TSS-Bot
     runs-on: ubuntu-latest
     steps:
-      - name: Clone The XenonUB Repo
-        run: git clone https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG }} tqb
+      - name: Clone The TSS Bot Repo
+        run: git clone https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG }} tss
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,15 +28,37 @@ jobs:
 
       - name: Install project dependencies and run userbot
         run: |
-          cd tqb
+          cd tss
+          pip install -r requirements.txt
+          python main.py
+        timeout-minutes: 340
+        continue-on-error: true
+
+  quizbot2:
+    name: BCS Odyssey Bot
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone The BCS Odyssey Bot Repo
+        run: git clone https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG2 }} bcs
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+        timeout-minutes: 5
+        continue-on-error: false
+
+      - name: Install project dependencies and run userbot
+        run: |
+          cd bcs
           pip install -r requirements.txt
           python main.py
         timeout-minutes: 340
         continue-on-error: true
 
   looper:
-    name: Run userbot loop
-    needs: userbot
+    name: Run QuizBot loop
+    needs: [quizbot1, quizbot2]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
