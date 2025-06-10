@@ -26,7 +26,7 @@ jobs:
         timeout-minutes: 5
         continue-on-error: false
 
-      - name: Install project dependencies and run userbot
+      - name: Install project dependencies and run TSS Bot
         run: |
           cd tss
           pip install -r requirements.txt
@@ -48,7 +48,7 @@ jobs:
         timeout-minutes: 5
         continue-on-error: false
 
-      - name: Install project dependencies and run userbot
+      - name: Install project dependencies and run BCS Odyssey Bot
         run: |
           cd bcs
           pip install -r requirements.txt
