@@ -72,12 +72,12 @@ jobs:
 
       - name: Install project dependencies and run TSS PDF-CSV
         run: |
-          cd pdfcsv
-          sudo apt update
-          sudo apt-get install -y --fix-missing poppler-data libpoppler-dev poppler-utils
-          sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0 \
-          pip install -r requirements.txt
-          python main.py
+         cd pdfcsv
+         sudo apt update
+         sudo apt-get install -y --fix-missing poppler-data libpoppler-dev poppler-utils
+         sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0
+         pip install -r requirements.txt
+         python main.py
         timeout-minutes: 340
         continue-on-error: true
 
