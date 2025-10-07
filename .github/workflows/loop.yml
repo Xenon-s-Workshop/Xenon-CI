@@ -73,6 +73,7 @@ jobs:
       - name: Install project dependencies and run TSS PDF-CSV
         run: |
           cd pdfcsv
+          sudo apt updatw
           sudo apt-get install -y --fix-missing poppler-data libpoppler-dev poppler-utils
           sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0 \
           pip install -r requirements.txt
