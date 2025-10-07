@@ -56,9 +56,34 @@ jobs:
         timeout-minutes: 340
         continue-on-error: true
 
+  pdfcsv:
+    name: TSS PDF-CSV
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone The TSS PDF-CSV Repo
+        run: git clone https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG3 }} pdfcsv
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+        timeout-minutes: 5
+        continue-on-error: false
+
+      - name: Install project dependencies and run TSS PDF-CSV
+        run: |
+          cd pdfcsv
+          sudo apt-get install -y --fix-missing poppler-data libpoppler-dev poppler-utils
+          sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0 \
+          pip install -r requirements.txt
+          python main.py
+        timeout-minutes: 340
+        continue-on-error: true
+
+
   looper:
     name: Run QuizBot loop
-    needs: [quizbot1, quizbot2]
+    needs: [quizbot1, quizbot2, pdfcsv]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
