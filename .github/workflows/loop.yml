@@ -73,7 +73,7 @@ jobs:
       - name: Install project dependencies and run TSS PDF-CSV
         run: |
          cd pdfcsv
-         sudo apt update
+         sudo apt-get update
          sudo apt-get install -y --fix-missing poppler-data libpoppler-dev poppler-utils
          sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0
          pip install -r requirements.txt
@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone The TSS-Atlas Bot Repo
-        run: git clone https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG4 }} tssatlas
+        run: git clone --branch atlas -single-branch https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG }} tssatlas
 
       - name: Set up Python
         uses: actions/setup-python@v5
