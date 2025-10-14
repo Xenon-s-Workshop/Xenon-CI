@@ -62,7 +62,7 @@ jobs:
     steps: 
       - name: Clone The Repository
         run: |
-          git clone https://${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG3 }} pdfcsv
+          git clone https://${{ secrets.GH_TOKEN }}@github.com/${{ secrets.PDFCSV }} pdfcsv
           cd pdfcsv
         timeout-minutes: 5
         continue-on-error: false
