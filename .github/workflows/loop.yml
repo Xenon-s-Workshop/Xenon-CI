@@ -107,7 +107,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone The TSS-Atlas Bot Repo
-        run: git clone --branch atlas https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG }} tssatlas
+        run: git clone --branch atlas2 https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG }} tssatlas
 
       - name: Set up Python
         uses: actions/setup-python@v5
