@@ -102,42 +102,10 @@ jobs:
         timeout-minutes: 340  # Almost 6 hours for the bot itself
         continue-on-error: true
 
-  quizbot3:
-    name: TSS-Atlas Bot
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone The TSS-Atlas Bot Repo
-        run: git clone https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.ATLAS }} atlas
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-        timeout-minutes: 5
-        continue-on-error: false
-
-      - name: Install project dependencies and run TSS Bot
-        run: |
-          cd atlas
-          sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
-          echo "deb http://archive.ubuntu.com/ubuntu jammy main universe" | sudo tee /etc/apt/sources.list
-          echo "deb http://security.ubuntu.com/ubuntu jammy-security main universe" | sudo tee -a /etc/apt/sources.list
-          sudo apt update
-          sudo apt --fix-broken install -y
-          sudo apt-get install -y --fix-missing poppler-data libpoppler-dev poppler-utils
-          sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0
-          pip install playwright
-          playwright install
-          playwright install chromium
-          pip install -r requirements.txt
-          python main.py
-        timeout-minutes: 340
-        continue-on-error: true
-
 
   looper:
     name: Run QuizBot loop
-    needs: [quizbot1, quizbot2, pdfcsv, quizbot3]
+    needs: [quizbot1, quizbot2, pdfcsv]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
