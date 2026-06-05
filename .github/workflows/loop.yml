@@ -1,123 +1,150 @@
 name: CI for QuizBots
+
 on:
   push:
     branches:
       - main
   workflow_dispatch:
+
 env:
   mail: ${{ secrets.GITHUBMAIL }}
   username: ${{ secrets.GITHUBNAME }}
   ACTIONS_RUNNER_DEBUG: true
   ACTIONS_STEP_DEBUG: true
+
 jobs:
   quizbot:
     name: TSS-Bot
     runs-on: ubuntu-latest
+
     steps:
       - name: Clone The TSS Bot Repo
         run: |
           git clone https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPOSLUG }} tss
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-        timeout-minutes: 5
+
       - name: Install system dependencies + Bengali fonts
         run: |
           sudo apt-get update
+
           sudo apt-get install -y --fix-missing \
-            wget curl unzip xvfb \
+            wget \
+            curl \
+            unzip \
+            xvfb \
             fontconfig \
             fonts-noto \
             fonts-noto-cjk \
             fonts-noto-color-emoji \
             fonts-beng \
-            fonts-beng-extra \
-            libnss3 libatk1.0-0 libatk-bridge2.0-0 \
-            libcups2 libdrm2 libxkbcommon0 libxcomposite1 \
-            libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+            fonts-beng-extra
+
       - name: Install SolaimanLipi Bengali font
         run: |
           sudo mkdir -p /usr/share/fonts/truetype/solaimanlipi
+
           sudo wget -q \
             "https://github.com/maateen/fonts/raw/master/SolaimanLipi.ttf" \
             -O /usr/share/fonts/truetype/solaimanlipi/SolaimanLipi.ttf
+
           sudo wget -q \
             "https://github.com/maateen/fonts/raw/master/SolaimanLipi_Bold.ttf" \
             -O /usr/share/fonts/truetype/solaimanlipi/SolaimanLipi_Bold.ttf
+
           sudo fc-cache -fv
+
       - name: Install Chrome (Selenium fallback)
         run: |
-          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub \
-            | sudo apt-key add -
-          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" \
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub \
+            | sudo gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg
+
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" \
             | sudo tee /etc/apt/sources.list.d/google-chrome.list
+
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
+
       - name: Verify Bengali font rendering
         run: |
           python3 - <<'EOF'
           import subprocess
+
           result = subprocess.run(
               ["fc-list", "--format=%{family}\n"],
               capture_output=True,
               text=True
           )
+
           fonts = result.stdout
+
           checks = {
               "SolaimanLipi": "SolaimanLipi" in fonts,
               "Noto Sans Bengali": "Noto Sans Bengali" in fonts,
               "Noto Serif Bengali": "Noto Serif Bengali" in fonts,
           }
+
           for name, found in checks.items():
               print(f"{'✅' if found else '❌'} {name}")
           EOF
+
       - name: Install project dependencies
         run: |
           cd tss
-          sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
-          echo "deb http://archive.ubuntu.com/ubuntu jammy main universe" \
-            | sudo tee /etc/apt/sources.list
-          echo "deb http://security.ubuntu.com/ubuntu jammy-security main universe" \
-            | sudo tee -a /etc/apt/sources.list
-          sudo apt update
-          sudo apt --fix-broken install -y
-          sudo apt-get install -y --fix-missing \
+
+          sudo apt-get update
+
+          sudo apt-get install -y \
             poppler-data \
             libpoppler-dev \
-            poppler-utils
-          sudo apt-get install -y \
+            poppler-utils \
             libpango-1.0-0 \
             libpangoft2-1.0-0
+
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
           pip install playwright
           playwright install chromium
           playwright install-deps chromium
-          pip install -r requirements.txt
+
       - name: Run TSS Bot
         run: |
           cd tss
           python main.py
         timeout-minutes: 340
         continue-on-error: true
+
   looper:
     name: Run QuizBot loop
     needs:
       - quizbot
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
       - name: Set Git Configs & Secrets
         run: |
           git config --global user.email "${{ env.mail }}"
           git config --global user.name "${{ env.username }}"
           git config --global pull.rebase false
           git config --global credential.helper store
-          echo "https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com" \
-            > ~/.git-credentials
+
+          echo "https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
+
       - name: Create an empty commit
         run: |
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} temp
+
           cd temp
+
+          git pull origin main
+
           git commit --allow-empty -m "[LOOP] Re-run XenonCI workflow"
-          git push
+
+          git push origin main
