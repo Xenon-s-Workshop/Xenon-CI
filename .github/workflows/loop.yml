@@ -34,21 +34,59 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            wget curl unzip xvfb \
+            wget \
+            curl \
+            unzip \
+            xvfb \
             fontconfig \
-            fonts-noto fonts-noto-cjk fonts-noto-color-emoji \
-            libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 \
-            libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
-            libgbm1 libasound2 libpangocairo-1.0-0 libpango-1.0-0 \
-            libcups2 libdrm2 libx11-xcb1 libxcb1 libxkbcommon0
+            fonts-noto \
+            fonts-noto-cjk \
+            fonts-noto-color-emoji \
+            libnss3 \
+            libnspr4 \
+            libatk1.0-0 \
+            libatk-bridge2.0-0 \
+            libxcomposite1 \
+            libxdamage1 \
+            libxfixes3 \
+            libxrandr2 \
+            libgbm1 \
+            libpangocairo-1.0-0 \
+            libpango-1.0-0 \
+            libcups2 \
+            libdrm2 \
+            libx11-xcb1 \
+            libxcb1 \
+            libxkbcommon0
 
-      - name: Verify Bengali fonts
+      - name: Verify Bengali font rendering
         run: |
-          fc-list | grep -i "noto" || true
+          python3 - <<'EOF'
+          import subprocess
+          result = subprocess.run(
+              ["fc-list", "--format=%{family}\n"],
+              capture_output=True,
+              text=True
+          )
+          fonts = result.stdout
+          checks = {
+              "Noto Sans Bengali": "Noto Sans Bengali" in fonts,
+              "Noto Serif Bengali": "Noto Serif Bengali" in fonts,
+          }
+          for name, found in checks.items():
+              print(f"{'✅' if found else '❌'} {name}")
+          EOF
 
-      - name: Install Python dependencies
+      - name: Install project dependencies
         run: |
           cd tss
+          sudo apt-get update
+          sudo apt-get install -y \
+            poppler-data \
+            libpoppler-dev \
+            poppler-utils \
+            libpango-1.0-0 \
+            libpangoft2-1.0-0
           pip install --upgrade pip
           pip install -r requirements.txt
           pip install playwright
@@ -57,7 +95,7 @@ jobs:
         run: |
           python -m playwright install --with-deps chromium
 
-      - name: Run bot (Playwright headless)
+      - name: Run TSS Bot
         run: |
           cd tss
           xvfb-run -a python main.py
@@ -70,15 +108,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Git config
+      - name: Set Git Configs
         run: |
           git config --global user.email "${{ env.mail }}"
           git config --global user.name "${{ env.username }}"
+          git config --global pull.rebase false
 
-      - name: Trigger loop commit
+      - name: Create empty commit loop
         run: |
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} temp
           cd temp
