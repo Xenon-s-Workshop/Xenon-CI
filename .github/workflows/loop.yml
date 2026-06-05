@@ -30,7 +30,7 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install system dependencies + base fonts
+      - name: Install system dependencies + fonts
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -59,17 +59,23 @@ jobs:
             libxcb1 \
             libxkbcommon0
 
-      - name: Install Hind Siliguri font
+      - name: Verify Bengali font rendering
         run: |
-          wget -O HindSiliguri.zip https://fonts.google.com/download?family=Hind%20Siliguri
-          unzip HindSiliguri.zip -d hind-font
-          sudo mkdir -p /usr/share/fonts/hind-siliguri
-          sudo find hind-font -name "*.ttf" -exec cp {} /usr/share/fonts/hind-siliguri/ \;
-          sudo fc-cache -fv
-
-      - name: Verify Bengali + Hindi fonts
-        run: |
-          fc-list | grep -i "Noto\|Hind" || true
+          python3 - <<'EOF'
+          import subprocess
+          result = subprocess.run(
+              ["fc-list", "--format=%{family}\n"],
+              capture_output=True,
+              text=True
+          )
+          fonts = result.stdout
+          checks = {
+              "Noto Sans Bengali": "Noto Sans Bengali" in fonts,
+              "Noto Serif Bengali": "Noto Serif Bengali" in fonts,
+          }
+          for name, found in checks.items():
+              print(f"{'✅' if found else '❌'} {name}")
+          EOF
 
       - name: Install project dependencies
         run: |
@@ -105,7 +111,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Git config
+      - name: Set Git Configs
         run: |
           git config --global user.email "${{ env.mail }}"
           git config --global user.name "${{ env.username }}"
