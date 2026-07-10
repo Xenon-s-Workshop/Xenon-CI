@@ -94,6 +94,11 @@ jobs:
       - name: Install Playwright browsers
         run: |
           python -m playwright install --with-deps chromium
+          
+      - name: Install Firefox
+        run: |
+          sudo apt-get install -y firefox
+          firefox --version
 
       - name: Run TSS Bot
         run: |
