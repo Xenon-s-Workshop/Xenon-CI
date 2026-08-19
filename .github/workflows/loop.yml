@@ -30,33 +30,6 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            wget \
-            curl \
-            unzip \
-            xvfb \
-
-      - name: Verify Bengali font rendering
-        run: |
-          python3 - <<'EOF'
-          import subprocess
-          result = subprocess.run(
-              ["fc-list", "--format=%{family}\n"],
-              capture_output=True,
-              text=True
-          )
-          fonts = result.stdout
-          checks = {
-              "Noto Sans Bengali": "Noto Sans Bengali" in fonts,
-              "Noto Serif Bengali": "Noto Serif Bengali" in fonts,
-          }
-          for name, found in checks.items():
-              print(f"{'✅' if found else '❌'} {name}")
-          EOF
-
       - name: Install project dependencies
         run: |
           cd tss
