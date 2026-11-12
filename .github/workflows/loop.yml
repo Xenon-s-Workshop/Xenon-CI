@@ -47,7 +47,7 @@ jobs:
       - name: Install Playwright browsers & Firefox
         run: |
           sudo apt-get update
-          #sudo apt-get install -y firefox xvfb jq wget curl libgtk-3-0 libdbus-glib-1-2 libasound2t64 libgbm1
+          sudo apt-get install -y xvfb jq wget curl libgtk-3-0 libdbus-glib-1-2 libasound2t64 libgbm1
           python -m playwright install --with-deps chromium
 
       - name: Run TSS Bot
