@@ -57,9 +57,40 @@ jobs:
         timeout-minutes: 340
         continue-on-error: true
 
+  ragbot:
+    name: RAG-Bot
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Clone RAG bot repo
+        run: |
+          git clone https://${{ env.username }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.RAGREPOSLUG }} usmle-rag-bot
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install RAG bot dependencies
+        run: |
+          cd usmle-rag-bot
+          python -m pip install --upgrade pip certifi
+          pip install -r requirements.txt
+
+      - name: Run RAG Bot
+        run: |
+          cd usmle-rag-bot
+          python -m bot.main
+        timeout-minutes: 340
+        continue-on-error: true
+
   looper:
     name: Run QuizBot loop
-    needs: quizbot
+    needs: [quizbot, ragbot]
+    if: always()
     runs-on: ubuntu-latest
 
     steps:
