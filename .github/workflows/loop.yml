@@ -84,17 +84,6 @@ jobs:
           python -m pip install --upgrade pip certifi
           pip install -r requirements.txt
 
-      - name: Create .env file
-        env:
-          RAG_ENV: ${{ secrets.RAG_ENV }}
-        run: |
-          cd usmle-rag-bot
-          if [ -z "$RAG_ENV" ]; then
-            echo "ERROR: RAG_ENV secret is empty or missing"
-            exit 1
-          fi
-          printf '%s\n' "$RAG_ENV" > .env
-
       - name: Run RAG Bot
         run: |
           cd usmle-rag-bot
