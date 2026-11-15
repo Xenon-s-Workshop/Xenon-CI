@@ -83,9 +83,12 @@ jobs:
       - name: Run RAG Bot
         run: |
           cd usmle-rag-bot
-          python -m bot.main
+          echo "--- Folder contents ---"
+          ls -la
+          echo "--- Starting bot ---"
+          python -u -X faulthandler -m bot.main
+          echo "--- Bot exited with code 0 ---"
         timeout-minutes: 340
-        continue-on-error: true
 
   looper:
     name: Run QuizBot loop
